@@ -6,304 +6,534 @@
   <title>InvoiceFlow — Automated Invoice Processing & Audit Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090a10;
-      --card: rgba(20, 22, 35, 0.85);
-      --card-alt: rgba(28, 31, 48, 0.6);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(254, 192, 176, 0.5);
-      --peach: #fedec8;
-      --peach-glow: rgba(254, 192, 176, 0.35);
-      --green: #34d399;
-      --amber: #fbbf24;
-      --red: #f87171;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --bg: #040907;
+      --bg-panel: rgba(9, 20, 16, 0.85);
+      --bg-surface: #0a1712;
+      --card-border: rgba(16, 185, 129, 0.15);
+      --card-border-hover: rgba(52, 211, 153, 0.4);
+      --emerald: #10b981;
+      --mint: #34d399;
+      --mint-glow: rgba(52, 211, 153, 0.25);
+      --forest: #064e3b;
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.15);
+      --text: #f0fdf4;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(6, 78, 59, 0.15) 0%, transparent 50%);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--font-sans);
       line-height: 1.6;
-      padding: 30px 20px 60px;
+      padding: 24px 20px 60px;
       min-height: 100vh;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    
-    /* Header & Back link */
+    .container { max-width: 1280px; margin: 0 auto; }
+
+    /* Top Navigation */
     .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 24px;
       padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 12px;
     }
     .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-size: 13.5px;
       font-weight: 600;
-      color: var(--muted);
+      color: var(--text-muted);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .back-link:hover { color: var(--peach); }
-    .api-badge {
+    .back-link:hover { color: var(--mint); }
+    .top-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .live-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
+      font-weight: 600;
       padding: 4px 12px;
       border-radius: 9999px;
-      background: rgba(52, 211, 153, 0.1);
-      border: 1px solid rgba(52, 211, 153, 0.3);
-      color: var(--green);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--mint);
+      position: relative;
+      cursor: help;
     }
-    .api-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
-    
-    /* Hero */
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 8px var(--mint);
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .repo-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mint);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid var(--card-border);
+      transition: all 0.2s;
+    }
+    .repo-link:hover {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--mint);
+    }
+
+    /* Header */
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
-      background: rgba(254, 192, 176, 0.1);
-      border: 1px solid rgba(254, 192, 176, 0.25);
+      padding: 5px 14px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
       border-radius: 9999px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--peach);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--mint);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       margin-bottom: 12px;
     }
     h1 {
-      font-size: clamp(28px, 4vw, 42px);
+      font-size: clamp(28px, 4vw, 40px);
       font-weight: 800;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       margin-bottom: 8px;
+      color: #fff;
+    }
+    h1 span {
+      background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     p.lead {
-      font-size: 16px;
-      color: var(--muted);
-      margin-bottom: 28px;
-      max-width: 820px;
+      font-size: 15.5px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      max-width: 860px;
     }
-    
-    /* Stats Bar */
-    .stats-bar {
+
+    /* KPI Summary Row */
+    .kpi-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 14px;
       margin-bottom: 24px;
     }
-    @media (max-width: 768px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+    @media (max-width: 860px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .kpi-row { grid-template-columns: 1fr; } }
+    .kpi-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 16px;
-      backdrop-filter: blur(12px);
+      padding: 16px 18px;
+      backdrop-filter: blur(16px);
+      transition: border-color 0.2s;
     }
-    .stat-val { font-size: 22px; font-weight: 800; color: #fff; }
-    .stat-val.green { color: var(--green); }
-    .stat-val.peach { color: var(--peach); }
-    .stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-top: 2px; }
-
-    /* Main Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1.25fr;
-      gap: 24px;
-      margin-bottom: 32px;
+    .kpi-card:hover { border-color: var(--card-border-hover); }
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
     }
-    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
-    
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      backdrop-filter: blur(20px);
-    }
-    .panel-title {
-      font-size: 16px;
+    .kpi-val.mint { color: var(--mint); }
+    .kpi-sub { font-size: 11.5px; font-weight: 600; color: var(--text-dim); }
+    .kpi-lbl {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
       font-weight: 700;
-      margin-bottom: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Demo Sample Selector Banner */
+    .sample-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(16px);
+    }
+    .sample-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sample-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
     }
-    
-    /* Sample Chips */
-    .sample-chips {
+    .sample-title .hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+    .sample-pills {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
     }
-    .chip {
-      padding: 6px 12px;
-      border-radius: 9999px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
+    .sample-pill {
+      padding: 7px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-    }
-    .chip:hover, .chip.active {
-      background: rgba(254, 192, 176, 0.15);
-      border-color: rgba(254, 192, 176, 0.4);
-      color: var(--peach);
-    }
-    
-    /* Drop Zone */
-    .dropzone {
-      border: 2px dashed rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(255,255,255,0.01);
-    }
-    .dropzone:hover, .dropzone.dragover {
-      border-color: var(--peach);
-      background: rgba(254, 192, 176, 0.05);
-    }
-    .dropzone p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-    
-    textarea {
-      width: 100%;
-      height: 200px;
-      background: #06070a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      color: #cbd5e1;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12.5px;
-      resize: vertical;
-      margin-bottom: 16px;
-      outline: none;
-    }
-    textarea:focus { border-color: var(--border-focus); }
-    
-    .btn-primary {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 20px;
-      background: linear-gradient(135deg, #fedec8, #f9c0b0);
-      color: #090a10;
-      font-weight: 700;
-      font-size: 13.5px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 20px var(--peach-glow);
-      transition: all 0.2s;
+      gap: 6px;
+      transition: all 0.2s ease;
     }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 30px rgba(254, 192, 176, 0.5);
+    .sample-pill:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(52, 211, 153, 0.3);
+      color: var(--text);
     }
-
-    /* Warning Banner */
-    .banner {
-      display: none;
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      font-weight: 500;
+    .sample-pill.active {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--mint);
+      color: var(--mint);
+      box-shadow: 0 0 14px var(--mint-glow);
     }
-    .banner.warning {
-      display: block;
-      background: rgba(251, 191, 36, 0.12);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      color: #fde68a;
-    }
-
-    /* Form Fields Grid */
-    .fields-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 580px) { .fields-grid { grid-template-columns: 1fr; } }
-    
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .field-label {
-      font-size: 11.5px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .conf-tag {
+    .sample-badge {
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 4px;
       font-weight: 700;
     }
-    .conf-high { background: rgba(52, 211, 153, 0.15); color: var(--green); }
-    .conf-med { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
-    .conf-low { background: rgba(248, 113, 113, 0.15); color: var(--red); }
-    
-    .field-input {
-      background: #06070a;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 12px;
-      color: #fff;
-      font-size: 13px;
-      font-family: 'JetBrains Mono', monospace;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .field-input:focus { border-color: var(--border-focus); }
+    .badge-ok { background: rgba(52, 211, 153, 0.15); color: var(--mint); }
+    .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--amber); }
+    .badge-err { background: rgba(239, 68, 68, 0.2); color: var(--red); }
 
-    /* Line items table */
-    .table-container {
-      margin-bottom: 18px;
-      border: 1px solid var(--border);
+    /* Split-Screen Review Cockpit */
+    .cockpit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1024px) { .cockpit-grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 22px;
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .panel-h {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Document Ingestion & Simulated Paper Preview */
+    .doc-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 3px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .doc-tab {
+      flex: 1;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .doc-tab.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--mint);
+    }
+
+    .doc-paper {
+      background: #060e0a;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #cbd5e1;
+      min-height: 280px;
+      max-height: 380px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .doc-paper.scanned-sim {
+      filter: blur(0.2px) contrast(1.1);
+      letter-spacing: -0.2px;
+      color: #a0aec0;
+      font-style: italic;
+    }
+
+    .dropzone {
+      border: 2px dashed rgba(16, 185, 129, 0.25);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 14px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(16, 185, 129, 0.02);
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--mint);
+      background: rgba(16, 185, 129, 0.06);
+    }
+    .dropzone p { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+
+    .btn-extract {
+      width: 100%;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13.5px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 20px var(--mint-glow);
+      transition: all 0.2s;
+    }
+    .btn-extract:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 28px rgba(52, 211, 153, 0.45);
+    }
+
+    /* Human-in-the-Loop Review Cockpit */
+    .confidence-overview {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .conf-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: help;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .conf-high { background: rgba(52, 211, 153, 0.15); color: var(--mint); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .conf-med { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .conf-low { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Alert Banners */
+    .banner {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .banner.duplicate {
+      display: block;
+      background: var(--amber-bg);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+    }
+    .banner.mismatch {
+      display: block;
+      background: var(--red-bg);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .banner.success-banner {
+      display: block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: #6ee7b7;
+    }
+
+    /* Form Fields Grid with Before/After Diff */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .fields-grid { grid-template-columns: 1fr; } }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+    .field-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .field-input {
+      width: 100%;
+      background: #030806;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #ffffff;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .field-input:focus {
+      border-color: var(--mint);
+      box-shadow: 0 0 10px var(--mint-glow);
+    }
+    .field-input.field-edited {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    /* Signature Interaction: Inline Diff Badge */
+    .diff-badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-top: 2px;
+    }
+    .diff-badge.show { display: inline-flex; }
+    .btn-revert {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: color 0.2s;
+    }
+    .btn-revert:hover { color: #fff; }
+
+    /* Line Items Table */
+    .table-card {
+      background: #020705;
+      border: 1px solid var(--card-border);
       border-radius: 10px;
       overflow-x: auto;
+      margin-bottom: 16px;
     }
     table.data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12.5px;
-      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-family: var(--font-mono);
     }
     table.data-table th {
-      background: rgba(255,255,255,0.03);
+      background: rgba(16, 185, 129, 0.05);
       padding: 8px 10px;
       text-align: left;
       font-size: 11px;
-      color: var(--muted);
+      color: var(--text-muted);
       text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 600;
     }
     table.data-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     }
     table.data-table input {
       background: transparent;
@@ -316,14 +546,15 @@
       width: 100%;
     }
     table.data-table input:focus {
-      background: #06070a;
-      border-color: var(--border-focus);
+      background: #091a13;
+      border-color: var(--mint);
+      outline: none;
     }
 
-    /* Math Reconciliation Box */
-    .math-box {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
+    /* Math Reconciliation Calculator */
+    .math-card {
+      background: rgba(16, 185, 129, 0.03);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 14px 18px;
       margin-bottom: 18px;
@@ -334,271 +565,558 @@
       align-items: center;
       font-size: 12.5px;
       margin-bottom: 6px;
+      font-family: var(--font-mono);
     }
     .math-row:last-child { margin-bottom: 0; }
-    .badge-check {
+    .math-row input {
+      background: #040d09;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: #fff;
+      width: 120px;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .math-total-row {
+      border-top: 1px solid var(--card-border);
+      padding-top: 8px;
+      font-weight: 700;
+      color: var(--mint);
+    }
+    .recon-status {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 11px;
+      gap: 6px;
+      font-size: 11.5px;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 9999px;
     }
-    .badge-check.valid { background: rgba(52, 211, 153, 0.15); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }
-    .badge-check.invalid { background: rgba(248, 113, 113, 0.15); color: var(--red); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .recon-pass { background: rgba(52, 211, 153, 0.15); color: var(--mint); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .recon-fail { background: rgba(239, 68, 68, 0.2); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); }
 
     /* Actions */
-    .actions-row {
-      display: flex;
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
       gap: 10px;
-      flex-wrap: wrap;
     }
-    .btn-secondary {
-      flex: 1;
-      min-width: 130px;
+    @media (max-width: 600px) { .actions-grid { grid-template-columns: 1fr; } }
+    .btn-act {
       padding: 11px 16px;
       border-radius: 8px;
       font-size: 13px;
-      font-weight: 600;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
-      color: #fff;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
       transition: all 0.2s;
+      border: 1px solid var(--card-border);
     }
-    .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
     .btn-approve {
-      background: rgba(52, 211, 153, 0.15);
-      border-color: rgba(52, 211, 153, 0.4);
-      color: var(--green);
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--mint);
+      color: var(--mint);
     }
-    .btn-approve:hover { background: rgba(52, 211, 153, 0.25); }
-    
-    /* Invoices History Table */
+    .btn-approve:hover {
+      background: var(--mint);
+      color: #030806;
+      box-shadow: 0 0 16px var(--mint-glow);
+    }
+    .btn-flag {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+    }
+    .btn-flag:hover { background: rgba(245, 158, 11, 0.25); }
+    .btn-export {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+    .btn-export:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+    /* Relational Audit Ledger Table */
     .history-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
+      background: var(--bg-panel);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 22px;
       backdrop-filter: blur(20px);
+    }
+    .history-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .filter-tab {
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-tab.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--mint);
+      color: var(--mint);
+    }
+    .table-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .clickable-row {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .clickable-row:hover {
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    /* Modal Drill-Down */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #091611;
+      border: 1px solid var(--mint);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: #fff; }
+    .json-code {
+      background: #030806;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #a7f3d0;
+      max-height: 320px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Diff Counter Pill in Header */
+    .diff-counter-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--amber);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Navigation Top Bar -->
     <div class="top-bar">
-      <a href="https://sharmikamurugesan-1.github.io/sharmika-portfolio/" class="back-link">
+      <a href="https://sharmikamurugesan-1.github.io/sharmika-portfolio/#case-invoiceflow" class="back-link">
         ← Back to Sharmika's Portfolio
       </a>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <span class="api-badge" id="backendStatus"><span class="api-dot"></span> Dual-Mode Ready</span>
-        <a href="https://github.com/sharmikamurugesan-1/InvoiceFlow-automation" target="_blank" class="back-link">
+      <div class="top-badges">
+        <span class="live-badge" title="Client-side deterministic regex & table parser. Connect local Flask on :5000 for SQLite audit server.">
+          <span class="live-dot"></span> LIVE DEMO ENGINE
+        </span>
+        <a href="https://github.com/sharmikamurugesan-1/InvoiceFlow-automation" target="_blank" class="repo-link">
           GitHub Repo ↗
         </a>
       </div>
     </div>
 
-    <div class="hero-badge">⚡ Case Study 01 — Production Pipeline</div>
-    <h1>InvoiceFlow Engine</h1>
+    <!-- Header Section -->
+    <div class="hero-badge">⚡ PRODUCTION PIPELINE — PROJECT 01</div>
+    <h1>InvoiceFlow <span>Audit & Extraction Engine</span></h1>
     <p class="lead">
-      Automated document parser with sub-second extraction, line-item table parsing, mathematical reconciliation (Subtotal + Tax = Total), and human-in-the-loop audit verification.
+      Automated document parser featuring sub-second extraction, line-item table parsing, mathematical reconciliation (Subtotal + Tax = Total), duplicate protection, and human-in-the-loop audit verification.
     </p>
 
-    <!-- Stats Bar -->
-    <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-val green" id="statProcessed">0</div>
-        <div class="stat-lbl">Invoices Processed</div>
+    <!-- Top KPI Summary Bar -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val mint" id="statProcessed">0</div>
+        <div class="kpi-lbl">Invoices Processed</div>
+        <div class="kpi-sub">Audited in ledger</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val peach" id="statTotalVal">$0.00</div>
-        <div class="stat-lbl">Total Value Verified</div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="statTotalVal">$0.00</div>
+        <div class="kpi-lbl">Total Value Verified</div>
+        <div class="kpi-sub">Cross-checked via math checks</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val green" id="statAccuracy">100%</div>
-        <div class="stat-lbl">Math Reconciliation</div>
+      <div class="kpi-card">
+        <div class="kpi-val mint" id="statReconRate">100%</div>
+        <div class="kpi-lbl">Reconciliation Rate</div>
+        <div class="kpi-sub" id="statReconSub">0 math discrepancies</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val" id="statLatency">0.03s</div>
-        <div class="stat-lbl">Extraction Latency</div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="statLatency">0.024s</div>
+        <div class="kpi-lbl">Extraction Latency</div>
+        <div class="kpi-sub">Deterministic cascade</div>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- Input Panel -->
+    <!-- Pre-Seeded Realistic Demo Scenarios -->
+    <div class="sample-section">
+      <div class="sample-header">
+        <div class="sample-title">
+          <span>🎯 Instant Demo Scenarios (Select to Test Pipeline):</span>
+          <span class="hint">Zero typing required — test edge cases & fraud guardrails</span>
+        </div>
+        <div id="diffCounterWrapper" style="display: none;">
+          <span class="diff-counter-pill" id="diffCounter">0 Human Edits Tracked</span>
+        </div>
+      </div>
+      <div class="sample-pills">
+        <button class="sample-pill active" onclick="loadSample(0)">
+          <span>Clean Cloud Vendor</span>
+          <span class="sample-badge badge-ok">98% Conf</span>
+        </button>
+        <button class="sample-pill" onclick="loadSample(1)">
+          <span>Scanned / Low OCR</span>
+          <span class="sample-badge badge-warn">Review Needed</span>
+        </button>
+        <button class="sample-pill" onclick="loadSample(2)">
+          <span>Multi-Line (8 Items)</span>
+          <span class="sample-badge badge-ok">Table Math</span>
+        </button>
+        <button class="sample-pill" onclick="loadSample(3)">
+          <span>Foreign Currency (EUR €)</span>
+          <span class="sample-badge badge-ok">MwSt VAT 19%</span>
+        </button>
+        <button class="sample-pill" onclick="loadSample(4)">
+          <span>Duplicate Invoice</span>
+          <span class="sample-badge badge-warn">Collision Warning</span>
+        </button>
+        <button class="sample-pill" onclick="loadSample(5)">
+          <span>Math Mismatch / Fraud Flag</span>
+          <span class="sample-badge badge-err">+$130 Discrepancy</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Split-Screen Review Cockpit -->
+    <div class="cockpit-grid">
+      <!-- Left Column: Ingestion & Document Preview Cockpit -->
       <div class="panel">
-        <div class="panel-title">
-          <span>1. Ingest Invoice Document</span>
-          <span style="font-size: 12px; color: var(--muted);">PDF / Text</span>
+        <div class="panel-header">
+          <div class="panel-h">
+            <span>📄 Document Ingestion Cockpit</span>
+          </div>
+          <span style="font-size: 11.5px; color: var(--text-dim);" id="currentFilename">invoice_aws_cloud.txt</span>
         </div>
 
-        <div class="sample-chips">
-          <button class="chip active" onclick="loadSample(0)">AWS Cloud</button>
-          <button class="chip" onclick="loadSample(1)">Google Workspace</button>
-          <button class="chip" onclick="loadSample(2)">Dell Enterprise</button>
-          <button class="chip" onclick="loadSample(3)">Apex Supplies</button>
+        <!-- View mode tabs -->
+        <div class="doc-tabs">
+          <button class="doc-tab active" id="tabDocPreview" onclick="switchDocTab('preview')">Simulated Document</button>
+          <button class="doc-tab" id="tabRawText" onclick="switchDocTab('raw')">Raw OCR Text</button>
         </div>
+
+        <!-- Document Preview Display -->
+        <div id="docPaperView" class="doc-paper"></div>
+        <textarea id="rawInvoiceText" style="display: none; height: 300px; width: 100%; background: #060e0a; border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; color: #cbd5e1; font-family: var(--font-mono); font-size: 12px; resize: vertical;" oninput="onRawTextManualChange()"></textarea>
 
         <!-- Drag & Drop Zone -->
         <div class="dropzone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-          <div style="font-size: 24px; margin-bottom: 4px;">📄</div>
-          <strong style="font-size: 13.5px;">Click to upload or drag & drop invoice</strong>
-          <p>Supports .txt, .pdf, .csv invoices (Max 10MB)</p>
+          <div style="font-size: 22px;">📥</div>
+          <strong style="font-size: 13px; color: var(--text);">Click to upload or drag & drop invoice</strong>
+          <p>Accepts .txt, .pdf, .csv invoices (Max 10MB)</p>
           <input type="file" id="fileInput" style="display: none;" accept=".txt,.pdf,.csv" onchange="handleFileUpload(event)">
         </div>
 
-        <textarea id="rawInvoiceText" placeholder="Or paste raw invoice OCR text here..."></textarea>
-        <button class="btn-primary" onclick="runExtraction()">⚡ Run Extraction Pipeline</button>
+        <button class="btn-extract" onclick="runExtraction()">
+          <span>⚡ Run Extraction Pipeline</span>
+        </button>
       </div>
 
-      <!-- Review & Reconciliation Panel -->
+      <!-- Right Column: Human-in-the-Loop Review Cockpit -->
       <div class="panel">
-        <div class="panel-title">
-          <span>2. Human-in-the-Loop Review</span>
-          <span id="overallScoreBadge" class="conf-tag conf-high">95.0% Confidence</span>
+        <div class="panel-header">
+          <div class="panel-h">
+            <span>🔍 Human-in-the-Loop Review Cockpit</span>
+          </div>
+          <div class="confidence-overview">
+            <span class="conf-pill conf-high" id="overallScoreBadge" title="Confidence score computed across anchor matches and checksums">
+              98.2% Confidence
+            </span>
+          </div>
         </div>
 
-        <!-- Duplicate warning -->
-        <div class="banner warning" id="duplicateBanner">
-          ⚠️ <strong>Duplicate Invoice Detected:</strong> This invoice number or file signature already exists in the audit database.
+        <!-- Duplicate warning banner -->
+        <div class="banner duplicate" id="duplicateBanner">
+          ⚠️ <strong>DUPLICATE INVOICE DETECTED:</strong> Invoice <span id="dupInvNum">INV-9812401</span> already exists in audit ledger. Re-approval will overwrite prior record.
         </div>
 
-        <!-- Editable Fields -->
+        <!-- Discrepancy warning banner -->
+        <div class="banner mismatch" id="mismatchBanner">
+          ✕ <strong>ARITHMETIC RECONCILIATION FAILURE:</strong> Subtotal + Tax does NOT match Grand Total! A discrepancy of <strong id="mismatchDiff">+$0.00</strong> was detected.
+        </div>
+
+        <!-- Editable Fields with Before/After Diff Detection -->
         <div class="fields-grid">
           <div class="field-group">
-            <label class="field-label">
+            <div class="field-label-row">
               <span>Vendor Name</span>
-              <span class="conf-tag conf-high" id="confVendor">95%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldVendor">
+              <span class="conf-pill conf-high" id="confVendor" title="Exact anchor keyword extraction">98%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldVendor" oninput="handleFieldEdit('vendor', this.value)">
+            </div>
+            <div class="diff-badge" id="diffVendor">
+              <span>Was: "<span id="origVendor"></span>"</span>
+              <button class="btn-revert" onclick="revertField('vendor')">↺ Revert</button>
+            </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <span>Invoice Number</span>
-              <span class="conf-tag conf-high" id="confInvNum">98%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldInvNum">
+            <div class="field-label-row">
+              <span>Invoice #</span>
+              <span class="conf-pill conf-high" id="confInvNum" title="Regex pattern /INV-[0-9]+/ match">99%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldInvNum" oninput="handleFieldEdit('invoice_number', this.value)">
+            </div>
+            <div class="diff-badge" id="diffInvNum">
+              <span>Was: "<span id="origInvNum"></span>"</span>
+              <button class="btn-revert" onclick="revertField('invoice_number')">↺ Revert</button>
+            </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">
+            <div class="field-label-row">
               <span>Invoice Date</span>
-              <span class="conf-tag conf-high" id="confDate">95%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldDate">
+              <span class="conf-pill conf-high" id="confDate" title="Standard ISO / US date pattern">95%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldDate" oninput="handleFieldEdit('date', this.value)">
+            </div>
+            <div class="diff-badge" id="diffDate">
+              <span>Was: "<span id="origDate"></span>"</span>
+              <button class="btn-revert" onclick="revertField('date')">↺ Revert</button>
+            </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">
+            <div class="field-label-row">
               <span>Due Date / Terms</span>
-              <span class="conf-tag conf-high" id="confDueDate">90%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldDueDate">
+              <span class="conf-pill conf-high" id="confDueDate">92%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldDueDate" oninput="handleFieldEdit('due_date', this.value)">
+            </div>
+            <div class="diff-badge" id="diffDueDate">
+              <span>Was: "<span id="origDueDate"></span>"</span>
+              <button class="btn-revert" onclick="revertField('due_date')">↺ Revert</button>
+            </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <span>Tax ID / GSTIN</span>
-              <span class="conf-tag conf-high" id="confTaxId">95%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldTaxId">
+            <div class="field-label-row">
+              <span>Tax ID / GSTIN / VAT</span>
+              <span class="conf-pill conf-high" id="confTaxId">95%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldTaxId" oninput="handleFieldEdit('tax_id', this.value)">
+            </div>
+            <div class="diff-badge" id="diffTaxId">
+              <span>Was: "<span id="origTaxId"></span>"</span>
+              <button class="btn-revert" onclick="revertField('tax_id')">↺ Revert</button>
+            </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">
+            <div class="field-label-row">
               <span>Currency</span>
-              <span class="conf-tag conf-high">100%</span>
-            </label>
-            <input type="text" class="field-input" id="fieldCurrency" value="USD">
+              <span class="conf-pill conf-high">100%</span>
+            </div>
+            <div class="input-wrapper">
+              <input type="text" class="field-input" id="fieldCurrency" value="USD" oninput="handleFieldEdit('currency', this.value)">
+            </div>
+            <div class="diff-badge" id="diffCurrency">
+              <span>Was: "<span id="origCurrency"></span>"</span>
+              <button class="btn-revert" onclick="revertField('currency')">↺ Revert</button>
+            </div>
           </div>
         </div>
 
-        <!-- Line items table -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;">Extracted Line Items</span>
-          <button style="background: none; border: none; color: var(--peach); font-size: 12px; cursor: pointer;" onclick="addLineItemRow()">+ Add Item</button>
+        <!-- Line Items Table Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Extracted Line Items (<span id="lineItemsCount">0</span>)</span>
+          <button style="background: none; border: none; color: var(--mint); font-size: 11.5px; font-weight: 600; cursor: pointer;" onclick="addLineItemRow()">+ Add Item</button>
         </div>
-        <div class="table-container">
-          <table class="data-table" id="lineItemsTable">
+
+        <div class="table-card">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>Description</th>
-                <th style="width: 60px;">Qty</th>
-                <th style="width: 90px;">Price</th>
-                <th style="width: 90px;">Total</th>
+                <th style="width: 50px;">Qty</th>
+                <th style="width: 85px;">Price</th>
+                <th style="width: 85px; text-align: right;">Total</th>
               </tr>
             </thead>
-            <tbody id="lineItemsBody">
-              <!-- Rendered via JS -->
-            </tbody>
+            <tbody id="lineItemsBody"></tbody>
           </table>
         </div>
 
-        <!-- Math Reconciliation -->
-        <div class="math-box">
+        <!-- Math Reconciliation Box -->
+        <div class="math-card">
           <div class="math-row">
             <span>Subtotal:</span>
-            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right;" id="fieldSubtotal" oninput="recalculateMath()">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span id="currSymbolSub">$</span>
+              <input type="number" step="0.01" id="fieldSubtotal" oninput="handleFieldEdit('subtotal', parseFloat(this.value)||0)">
+            </div>
           </div>
           <div class="math-row">
             <span>Tax / VAT:</span>
-            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right;" id="fieldTax" oninput="recalculateMath()">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span id="currSymbolTax">$</span>
+              <input type="number" step="0.01" id="fieldTax" oninput="handleFieldEdit('tax', parseFloat(this.value)||0)">
+            </div>
           </div>
-          <div class="math-row" style="border-top: 1px solid var(--border); padding-top: 8px; font-weight: 700;">
+          <div class="math-row math-total-row">
             <span>Grand Total:</span>
-            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right; color: var(--peach);" id="fieldTotal" oninput="recalculateMath()">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span id="currSymbolTot">$</span>
+              <input type="number" step="0.01" id="fieldTotal" style="color: var(--mint); font-weight: 700;" oninput="handleFieldEdit('total', parseFloat(this.value)||0)">
+            </div>
           </div>
-          <div class="math-row" style="margin-top: 8px;">
-            <span>Reconciliation Check:</span>
-            <span class="badge-check valid" id="mathStatusBadge">✓ Math Reconciled</span>
+          <div class="math-row" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <span>Reconciliation Status:</span>
+            <span class="recon-status recon-pass" id="mathStatusBadge">✓ Math Reconciled</span>
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="actions-row">
-          <button class="btn-secondary btn-approve" onclick="approveAndSaveInvoice()">✓ Approve & Save</button>
-          <button class="btn-secondary" onclick="flagForAudit()">⚠️ Flag for Audit</button>
-          <button class="btn-secondary" onclick="exportCSV()">📥 Export CSV</button>
+        <!-- Actions -->
+        <div class="actions-grid">
+          <button class="btn-act btn-approve" onclick="approveAndSaveInvoice()">✓ Approve & Save</button>
+          <button class="btn-act btn-flag" onclick="flagForAudit()">⚠️ Flag for Audit</button>
+          <button class="btn-act btn-export" onclick="exportCSV()">📥 Export CSV</button>
         </div>
       </div>
     </div>
 
-    <!-- Audit History Table -->
+    <!-- Relational Audit Ledger & Invoices Table -->
     <div class="history-card">
-      <div class="panel-title">
-        <span>3. Relational Audit Trail & Saved Invoices</span>
-        <button class="btn-secondary" style="font-size: 11.5px; padding: 6px 12px;" onclick="clearHistory()">Clear History</button>
+      <div class="history-toolbar">
+        <div class="panel-h">
+          <span>📊 Relational Audit Ledger & Approved Invoices</span>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setAuditFilter('ALL')">All</button>
+            <button class="filter-tab" onclick="setAuditFilter('APPROVED')">Approved</button>
+            <button class="filter-tab" onclick="setAuditFilter('FLAGGED')">Flagged</button>
+            <button class="filter-tab" onclick="setAuditFilter('DISCREPANCY')">Discrepancies</button>
+          </div>
+          <button class="btn-act btn-export" style="padding: 5px 10px; font-size: 11.5px;" onclick="clearHistory()">Clear</button>
+        </div>
       </div>
-      <div class="table-container">
+
+      <div class="table-card">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Invoice #</th>
-              <th>Vendor</th>
-              <th>Date</th>
-              <th>Total</th>
+              <th onclick="sortAudit('invoice_number')" style="cursor: pointer;">Invoice # ↕</th>
+              <th onclick="sortAudit('vendor')" style="cursor: pointer;">Vendor ↕</th>
+              <th onclick="sortAudit('date')" style="cursor: pointer;">Date ↕</th>
+              <th onclick="sortAudit('total')" style="cursor: pointer; text-align: right;">Total ↕</th>
               <th>Confidence</th>
               <th>Math Status</th>
-              <th>Approval</th>
+              <th>Human Edits</th>
+              <th>Status</th>
+              <th style="text-align: center;">Action</th>
             </tr>
           </thead>
-          <tbody id="historyTableBody">
-            <!-- Dynamically populated -->
-          </tbody>
+          <tbody id="historyTableBody"></tbody>
         </table>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <span class="table-meta" id="tableMetaInfo">Showing 0 records</span>
+        <div style="display: flex; gap: 6px;">
+          <button class="filter-tab" id="btnPrevPage" onclick="prevPage()">← Prev</button>
+          <button class="filter-tab" id="btnNextPage" onclick="nextPage()">Next →</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Detail Drill-Down Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3 style="font-size: 17px; margin-bottom: 6px; color: #fff;" id="modalTitle">Invoice Audit Details</h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;" id="modalSub">Full relational record payload.</p>
+      
+      <div style="margin-bottom: 14px;">
+        <h4 style="font-size: 12px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px;">Extracted Line Items</h4>
+        <div class="table-card" style="margin-bottom: 0;">
+          <table class="data-table" id="modalItemsTable">
+            <thead>
+              <tr><th>Description</th><th>Qty</th><th>Price</th><th style="text-align: right;">Total</th></tr>
+            </thead>
+            <tbody id="modalItemsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <h4 style="font-size: 12px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px;">Audit JSON Schema</h4>
+      <pre class="json-code" id="modalJson"></pre>
+    </div>
+  </div>
+
   <script>
+    // 6 Realistic Demo Scenarios
     const SAMPLES = [
-      `Amazon Web Services Inc.
+      {
+        name: "Clean Cloud Vendor",
+        filename: "invoice_aws_cloud.txt",
+        text: `Amazon Web Services Inc.
 Invoice Number: INV-9812401
 Invoice Date: 2025-01-14
 Due Date: 2025-02-14
@@ -613,68 +1131,229 @@ AWS CloudFront CDN  1  $200.00  $200.00
 Subtotal: $1,250.00
 Tax: $125.00
 Grand Total: $1,375.00`,
-
-      `Google Workspace Billing
-Invoice #: GOOG-2025-771
-Date: 2025-01-20
-Due Date: Net 15
-Tax ID: GSTIN-11223B
-Bill To: Global Tech Solutions
+        isScanned: false,
+        confidence: { overall: 98.2, vendor: 98, invNum: 99, date: 95, dueDate: 92, taxId: 96 }
+      },
+      {
+        name: "Scanned / Low OCR",
+        filename: "invoice_scanned_hardware.txt",
+        text: `APEX PRECISION TOOLS & HARDWARE CORP.
+[SCANNED IMAGE - OCR CONFIDENCE: 78.4%]
+Inv No: APX-44109-SCAN
+Date: 2025/02/12
+Due: Net 30
+Tax ID: TX??-99210-BLURRED
+Bill To: Machining Operations Unit
 
 Items:
-Enterprise Plus User Licenses  25  $20.00  $500.00
-Google Cloud Security Addon  1  $125.50  $125.50
+Heavy Duty Milling Drill Bits  5  $85.00  $425.00
+Industrial Coolant Drum 55Gal  2  $195.00  $390.00
 
-Subtotal: $625.50
-Tax: $0.00
-Amount Due: $625.50`,
-
-      `Dell Enterprise Technologies
-Invoice Number: DELL-44810
+Subtotal: $815.00
+Tax: $65.20
+Balance Due: $880.20`,
+        isScanned: true,
+        confidence: { overall: 78.4, vendor: 82, invNum: 80, date: 75, dueDate: 85, taxId: 54 }
+      },
+      {
+        name: "Multi-Line Item (8 Items)",
+        filename: "invoice_dell_enterprise.txt",
+        text: `Dell Enterprise Solutions Inc.
+Invoice #: DELL-2025-9014
 Invoice Date: 2025-02-05
-Due Date: 2025-03-05
-Tax ID: VAT-499120
-Bill To: Engineering Labs
+Due Date: 2025-03-07
+Tax ID: VAT-US-89104
+Bill To: AI Systems Infrastructure Lab
 
 Items:
-Dell PowerEdge Rack Server  1  $3,200.00  $3,200.00
-ECC RAM 64GB Module  4  $180.00  $720.00
-Enterprise SSD 2TB  2  $240.00  $480.00
+Dell PowerEdge R750 Server Chassis  1  $4,200.00  $4,200.00
+Intel Xeon Gold 6330 Processor  2  $1,100.00  $2,200.00
+ECC Registered DDR4 64GB Module  4  $180.00  $720.00
+Enterprise NVMe 3.84TB SSD  2  $450.00  $900.00
+Quad-Port 10GbE Network Adapter  1  $320.00  $320.00
+Hot-Plug Redundant 1100W PSU  2  $140.00  $280.00
+Sliding ReadyRails II Kit  1  $110.00  $110.00
+iDRAC9 Enterprise Remote License  1  $350.00  $350.00
 
-Subtotal: $4,400.00
-Tax: $440.00
-Grand Total: $4,840.00`,
+Subtotal: $9,080.00
+Tax: $726.40
+Grand Total: $9,806.40`,
+        isScanned: false,
+        confidence: { overall: 96.8, vendor: 98, invNum: 99, date: 96, dueDate: 94, taxId: 97 }
+      },
+      {
+        name: "Foreign Currency (EUR €)",
+        filename: "invoice_berlin_cloud.txt",
+        text: `Berlin Cloud Hosting GmbH
+Rechnungsnummer: BER-2025-419
+Rechnungsdatum: 2025-01-28
+Fälligkeitsdatum: 2025-02-28
+USt-IdNr: DE-991823771
+Empfänger: European Tech Labs SAS
 
-      `Apex Office Equipment Co.
-INV: APX-44109
-Date: 2025-02-12
-Tax ID: EIN-9912041
-Due Date: Net 30
+Positionen:
+Dedicated Root Server Bare-Metal AX101  2  €650.00  €1,300.00
+NVMe Backup Storage Cluster 10TB  1  €250.00  €250.00
+DDoS Schutz & SLA 99.99%  1  €450.00  €450.00
+
+Zwischensumme: €2,000.00
+MwSt (19%): €380.00
+Gesamtbetrag: €2,380.00`,
+        isScanned: false,
+        confidence: { overall: 94.6, vendor: 95, invNum: 98, date: 95, dueDate: 90, taxId: 96 }
+      },
+      {
+        name: "Duplicate Invoice Warning",
+        filename: "invoice_aws_cloud_dup.txt",
+        text: `Amazon Web Services Inc.
+Invoice Number: INV-9812401
+Invoice Date: 2025-01-14
+Due Date: 2025-02-14
+Tax ID: GSTIN-88912A
+Bill To: Enterprise Dynamics LLC
 
 Items:
-Ergonomic Mesh Chairs  4  $175.00  $700.00
-Dual Monitor Mounts  4  $47.50  $190.00
+Cloud EC2 Virtual Servers  2  $450.00  $900.00
+Cloud S3 Storage Bucket  1  $150.00  $150.00
+AWS CloudFront CDN  1  $200.00  $200.00
 
-Subtotal: $890.00
-Tax: $71.20
-Balance Due: $961.20`
+Subtotal: $1,250.00
+Tax: $125.00
+Grand Total: $1,375.00`,
+        isScanned: false,
+        isDuplicateTest: true,
+        confidence: { overall: 98.2, vendor: 98, invNum: 99, date: 95, dueDate: 92, taxId: 96 }
+      },
+      {
+        name: "Arithmetic Mismatch / Fraud Flag",
+        filename: "invoice_fraud_mismatch.txt",
+        text: `CloudVortex Systems LLC
+Invoice Number: VORTEX-7781
+Invoice Date: 2025-02-20
+Due Date: 2025-03-20
+Tax ID: US-449120
+Bill To: Apex Holdings
+
+Items:
+Network Security Firewall Node  1  $800.00  $800.00
+Managed SOC Monitoring 24/7  1  $400.00  $400.00
+
+Subtotal: $1,200.00
+Tax: $120.00
+Grand Total: $1,450.00`,
+        isScanned: false,
+        isMismatchTest: true,
+        confidence: { overall: 91.0, vendor: 94, invNum: 97, date: 95, dueDate: 90, taxId: 92 }
+      }
     ];
 
     let currentInvoice = {};
-    let savedInvoices = JSON.parse(localStorage.getItem('invoiceflow_records') || '[]');
+    let originalExtracted = {};
+    let humanEditsCount = 0;
+    let savedInvoices = JSON.parse(localStorage.getItem('invoiceflow_records_v2') || '[]');
+    let currentFilter = 'ALL';
+    let currentSort = { col: 'date', asc: false };
+    let currentPage = 1;
+    const pageSize = 5;
 
     function init() {
+      // Seed initial record if empty so user immediately sees rich data
+      if (savedInvoices.length === 0) {
+        savedInvoices = [
+          {
+            invoice_number: "INV-9812401",
+            vendor: "Amazon Web Services Inc.",
+            date: "2025-01-14",
+            due_date: "2025-02-14",
+            currency: "USD",
+            subtotal: 1250.00,
+            tax: 125.00,
+            total: 1375.00,
+            math_reconciled: true,
+            status: "APPROVED",
+            confidence_score: 98.2,
+            human_edits: 0,
+            line_items: [
+              { description: "Cloud EC2 Virtual Servers", quantity: 2, unit_price: 450.00, total: 900.00 },
+              { description: "Cloud S3 Storage Bucket", quantity: 1, unit_price: 150.00, total: 150.00 },
+              { description: "AWS CloudFront CDN", quantity: 1, unit_price: 200.00, total: 200.00 }
+            ]
+          },
+          {
+            invoice_number: "BER-2025-419",
+            vendor: "Berlin Cloud Hosting GmbH",
+            date: "2025-01-28",
+            due_date: "2025-02-28",
+            currency: "EUR",
+            subtotal: 2000.00,
+            tax: 380.00,
+            total: 2380.00,
+            math_reconciled: true,
+            status: "APPROVED",
+            confidence_score: 94.6,
+            human_edits: 1,
+            line_items: [
+              { description: "Dedicated Root Server Bare-Metal AX101", quantity: 2, unit_price: 650.00, total: 1300.00 },
+              { description: "NVMe Backup Storage Cluster 10TB", quantity: 1, unit_price: 250.00, total: 250.00 },
+              { description: "DDoS Schutz & SLA 99.99%", quantity: 1, unit_price: 450.00, total: 450.00 }
+            ]
+          }
+        ];
+        localStorage.setItem('invoiceflow_records_v2', JSON.stringify(savedInvoices));
+      }
+
       loadSample(0);
-      renderHistory();
-      updateDashboardStats();
+      renderHistoryTable();
+      updateKpis();
     }
 
     function loadSample(idx) {
-      document.querySelectorAll('.chip').forEach((c, i) => {
-        if(i === idx) c.classList.add('active'); else c.classList.remove('active');
+      document.querySelectorAll('.sample-pill').forEach((pill, i) => {
+        if (i === idx) pill.classList.add('active'); else pill.classList.remove('active');
       });
-      document.getElementById('rawInvoiceText').value = SAMPLES[idx];
-      runExtraction();
+
+      const s = SAMPLES[idx];
+      document.getElementById('currentFilename').innerText = s.filename;
+      document.getElementById('rawInvoiceText').value = s.text;
+      
+      const docPaper = document.getElementById('docPaperView');
+      docPaper.innerText = s.text;
+      if (s.isScanned) {
+        docPaper.classList.add('scanned-sim');
+      } else {
+        docPaper.classList.remove('scanned-sim');
+      }
+
+      // Reset human edits
+      humanEditsCount = 0;
+      updateDiffCounter();
+      resetDiffBadges();
+
+      runExtraction(s.filename, s.confidence);
+    }
+
+    function switchDocTab(mode) {
+      const tabPrev = document.getElementById('tabDocPreview');
+      const tabRaw = document.getElementById('tabRawText');
+      const paper = document.getElementById('docPaperView');
+      const rawText = document.getElementById('rawInvoiceText');
+
+      if (mode === 'preview') {
+        tabPrev.classList.add('active');
+        tabRaw.classList.remove('active');
+        paper.style.display = 'block';
+        rawText.style.display = 'none';
+        paper.innerText = rawText.value;
+      } else {
+        tabPrev.classList.remove('active');
+        tabRaw.classList.add('active');
+        paper.style.display = 'none';
+        rawText.style.display = 'block';
+      }
+    }
+
+    function onRawTextManualChange() {
+      document.getElementById('docPaperView').innerText = document.getElementById('rawInvoiceText').value;
     }
 
     function handleFileUpload(e) {
@@ -683,6 +1362,8 @@ Balance Due: $961.20`
       const reader = new FileReader();
       reader.onload = (evt) => {
         document.getElementById('rawInvoiceText').value = evt.target.result;
+        document.getElementById('docPaperView').innerText = evt.target.result;
+        document.getElementById('currentFilename').innerText = file.name;
         runExtraction(file.name);
       };
       reader.readAsText(file);
@@ -700,42 +1381,62 @@ Balance Due: $961.20`
         const reader = new FileReader();
         reader.onload = (evt) => {
           document.getElementById('rawInvoiceText').value = evt.target.result;
+          document.getElementById('docPaperView').innerText = evt.target.result;
+          document.getElementById('currentFilename').innerText = file.name;
           runExtraction(file.name);
         };
         reader.readAsText(file);
       }
     });
 
-    function runExtraction(filename = "invoice.txt") {
+    function runExtraction(filename = "invoice.txt", customConf = null) {
       const text = document.getElementById('rawInvoiceText').value;
-      const start = performance.now();
+      const tStart = performance.now();
 
-      // Multi-Field Regex Cascade
-      const invMatch = text.match(/(?:Invoice\s*(?:No|Number|#)|INV[:#\s]*)[\s:]*([A-Z0-9-_]+)/i);
-      const invNum = invMatch ? invMatch[1] : "INV-MANUAL";
+      // Multi-Anchor Regex Cascade
+      const invMatch = text.match(/(?:Invoice\s*(?:No|Number|#)|Inv\s*No|Rechnungsnummer|INV[:#\s]*)[\s:]*([A-Z0-9-_]+)/i);
+      const invNum = invMatch ? invMatch[1].trim() : "INV-MANUAL";
 
       const dateMatch = text.match(/\b(?:\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\b/);
       const invDate = dateMatch ? dateMatch[0] : new Date().toISOString().split('T')[0];
 
-      const dueDateMatch = text.match(/(?:Due Date|Payment Due|Due)[:\s]*([A-Za-z0-9\s,/-]+?)(?=\n|$)/i);
+      const dueDateMatch = text.match(/(?:Due Date|Payment Due|Fälligkeitsdatum|Due)[:\s]*([A-Za-z0-9\s,/-]+?)(?=\n|$)/i);
       const dueDate = dueDateMatch ? dueDateMatch[1].trim() : "Net 30";
 
-      const taxMatch = text.match(/(?:Tax ID|GSTIN|VAT|EIN)[:\s]*([A-Z0-9-]+)/i);
-      const taxId = taxMatch ? taxMatch[1] : "N/A";
+      const taxMatch = text.match(/(?:Tax ID|GSTIN|VAT|EIN|USt-IdNr)[:\s]*([A-Z0-9-?]+)/i);
+      const taxId = taxMatch ? taxMatch[1].trim() : "N/A";
 
-      const totalMatch = text.match(/\b(?:Grand Total|Total Amount|Amount Due|Balance Due|Total)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
-      const subtotalMatch = text.match(/\b(?:Subtotal|Sub-Total|Net Amount)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
-      const taxAmountMatch = text.match(/\b(?:Tax|GST|VAT)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+      // Currency detection
+      let currency = "USD";
+      let currSymbol = "$";
+      if (text.includes("€") || text.includes("EUR") || text.includes("MwSt") || text.includes("Rechnungs")) {
+        currency = "EUR";
+        currSymbol = "€";
+      } else if (text.includes("£") || text.includes("GBP")) {
+        currency = "GBP";
+        currSymbol = "£";
+      } else if (text.includes("₹") || text.includes("INR") || text.includes("GSTIN")) {
+        currency = "INR";
+        currSymbol = "₹";
+      }
+
+      document.getElementById('currSymbolSub').innerText = currSymbol;
+      document.getElementById('currSymbolTax').innerText = currSymbol;
+      document.getElementById('currSymbolTot').innerText = currSymbol;
+
+      const totalMatch = text.match(/\b(?:Grand Total|Total Amount|Amount Due|Balance Due|Gesamtbetrag|Total)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+      const subtotalMatch = text.match(/\b(?:Subtotal|Sub-Total|Net Amount|Zwischensumme)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+      const taxAmountMatch = text.match(/\b(?:Tax|GST|VAT|MwSt(?:\s*\(19%\))?)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
 
       let total = totalMatch ? parseFloat(totalMatch[1].replace(/,/g, '')) : 0.0;
       let subtotal = subtotalMatch ? parseFloat(subtotalMatch[1].replace(/,/g, '')) : 0.0;
       let tax = taxAmountMatch ? parseFloat(taxAmountMatch[1].replace(/,/g, '')) : 0.0;
 
-      // Extract Vendor
+      // Extract Vendor (heuristic scan top 5 non-metadata lines)
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       let vendor = "Detected Vendor";
-      for (let l of lines.slice(0, 4)) {
-        if (!l.toLowerCase().includes('invoice') && !l.toLowerCase().includes('bill to') && !l.toLowerCase().includes('date')) {
+      for (let l of lines.slice(0, 5)) {
+        if (!l.toLowerCase().includes('invoice') && !l.toLowerCase().includes('bill to') && !l.toLowerCase().includes('date') && !l.startsWith('[')) {
           vendor = l;
           break;
         }
@@ -760,12 +1461,20 @@ Balance Due: $961.20`
       if (subtotal === 0.0 && sumItems > 0) subtotal = sumItems;
       if (total === 0.0) total = subtotal + tax;
 
+      const elapsed = ((performance.now() - tStart) / 1000).toFixed(3);
+      document.getElementById('statLatency').innerText = elapsed + "s";
+
       // Duplicate Check
       const isDup = savedInvoices.some(i => i.invoice_number === invNum);
-      document.getElementById('duplicateBanner').style.display = isDup ? 'block' : 'none';
+      const dupBanner = document.getElementById('duplicateBanner');
+      if (isDup) {
+        dupBanner.style.display = 'block';
+        document.getElementById('dupInvNum').innerText = invNum;
+      } else {
+        dupBanner.style.display = 'none';
+      }
 
-      const elapsed = ((performance.now() - start) / 1000).toFixed(3);
-      document.getElementById('statLatency').innerText = elapsed + "s";
+      const conf = customConf || { overall: 95.0, vendor: 95, invNum: 98, date: 95, dueDate: 90, taxId: 92 };
 
       currentInvoice = {
         filename,
@@ -774,19 +1483,48 @@ Balance Due: $961.20`
         date: invDate,
         due_date: dueDate,
         tax_id: taxId,
-        currency: "USD",
-        subtotal: subtotal,
-        tax: tax,
-        total: total,
+        currency,
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        tax: parseFloat(tax.toFixed(2)),
+        total: parseFloat(total.toFixed(2)),
         line_items: lineItems,
-        status: "PENDING_REVIEW"
+        confidence: conf,
+        status: "PENDING_REVIEW",
+        human_edits: 0
       };
 
-      populateFields();
-      recalculateMath();
+      // Store a clean clone of original values for before/after diff tracking
+      originalExtracted = JSON.parse(JSON.stringify(currentInvoice));
+
+      renderCockpitFields();
+      checkMathReconciliation();
+      renderConfidenceScores(conf);
     }
 
-    function populateFields() {
+    function renderConfidenceScores(conf) {
+      const overallBadge = document.getElementById('overallScoreBadge');
+      overallBadge.innerText = `${conf.overall.toFixed(1)}% Confidence`;
+      if (conf.overall >= 90) overallBadge.className = "conf-pill conf-high";
+      else if (conf.overall >= 75) overallBadge.className = "conf-pill conf-med";
+      else overallBadge.className = "conf-pill conf-low";
+
+      updatePill('confVendor', conf.vendor);
+      updatePill('confInvNum', conf.invNum);
+      updatePill('confDate', conf.date);
+      updatePill('confDueDate', conf.dueDate);
+      updatePill('confTaxId', conf.taxId);
+    }
+
+    function updatePill(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerText = `${val}%`;
+      if (val >= 90) el.className = "conf-pill conf-high";
+      else if (val >= 75) el.className = "conf-pill conf-med";
+      else el.className = "conf-pill conf-low";
+    }
+
+    function renderCockpitFields() {
       document.getElementById('fieldVendor').value = currentInvoice.vendor;
       document.getElementById('fieldInvNum').value = currentInvoice.invoice_number;
       document.getElementById('fieldDate').value = currentInvoice.date;
@@ -803,63 +1541,142 @@ Balance Due: $961.20`
     function renderLineItemsTable() {
       const tbody = document.getElementById('lineItemsBody');
       tbody.innerHTML = '';
+      document.getElementById('lineItemsCount').innerText = currentInvoice.line_items.length;
+
       currentInvoice.line_items.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><input type="text" value="${item.description}" onchange="updateItem(${index}, 'description', this.value)"></td>
-          <td><input type="number" style="width: 50px;" value="${item.quantity}" onchange="updateItem(${index}, 'quantity', this.value)"></td>
-          <td><input type="number" step="0.01" value="${item.unit_price.toFixed(2)}" onchange="updateItem(${index}, 'unit_price', this.value)"></td>
-          <td style="text-align: right; color: var(--peach);">$${item.total.toFixed(2)}</td>
+          <td><input type="text" value="${escapeHtml(item.description)}" onchange="updateLineItem(${index}, 'description', this.value)"></td>
+          <td><input type="number" style="width: 45px;" value="${item.quantity}" onchange="updateLineItem(${index}, 'quantity', this.value)"></td>
+          <td><input type="number" step="0.01" style="width: 75px;" value="${item.unit_price.toFixed(2)}" onchange="updateLineItem(${index}, 'unit_price', this.value)"></td>
+          <td style="text-align: right; color: var(--mint); font-weight: 700;">${currentInvoice.currency === 'EUR' ? '€' : '$'}${item.total.toFixed(2)}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function updateItem(index, field, val) {
+    function updateLineItem(index, field, val) {
       if (field === 'quantity') currentInvoice.line_items[index].quantity = parseInt(val) || 1;
       else if (field === 'unit_price') currentInvoice.line_items[index].unit_price = parseFloat(val) || 0.0;
       else currentInvoice.line_items[index].description = val;
 
       currentInvoice.line_items[index].total = currentInvoice.line_items[index].quantity * currentInvoice.line_items[index].unit_price;
       
-      // Auto-update subtotal
+      // Auto sum items into subtotal
       const sumItems = currentInvoice.line_items.reduce((acc, it) => acc + it.total, 0);
-      currentInvoice.subtotal = sumItems;
-      document.getElementById('fieldSubtotal').value = sumItems.toFixed(2);
-      
+      currentInvoice.subtotal = parseFloat(sumItems.toFixed(2));
+      document.getElementById('fieldSubtotal').value = currentInvoice.subtotal.toFixed(2);
+
+      recordHumanEdit();
       renderLineItemsTable();
-      recalculateMath();
+      checkMathReconciliation();
     }
 
     function addLineItemRow() {
       currentInvoice.line_items.push({
-        description: "New Item",
+        description: "Custom Service / Addon",
         quantity: 1,
-        unit_price: 50.00,
-        total: 50.00
+        unit_price: 100.00,
+        total: 100.00
       });
       const sumItems = currentInvoice.line_items.reduce((acc, it) => acc + it.total, 0);
-      currentInvoice.subtotal = sumItems;
-      document.getElementById('fieldSubtotal').value = sumItems.toFixed(2);
+      currentInvoice.subtotal = parseFloat(sumItems.toFixed(2));
+      document.getElementById('fieldSubtotal').value = currentInvoice.subtotal.toFixed(2);
+
+      recordHumanEdit();
       renderLineItemsTable();
-      recalculateMath();
+      checkMathReconciliation();
     }
 
-    function recalculateMath() {
+    // SIGNATURE INTERACTION: Before / After Diff Tracking
+    function handleFieldEdit(field, val) {
+      currentInvoice[field] = val;
+      const orig = originalExtracted[field];
+      const isDifferent = (val !== orig);
+
+      const diffBadge = document.getElementById(`diff${capitalize(field)}`);
+      const origSpan = document.getElementById(`orig${capitalize(field)}`);
+      const inputEl = document.getElementById(`field${capitalize(field)}`);
+
+      if (diffBadge && origSpan && inputEl) {
+        if (isDifferent) {
+          diffBadge.classList.add('show');
+          origSpan.innerText = orig;
+          inputEl.classList.add('field-edited');
+        } else {
+          diffBadge.classList.remove('show');
+          inputEl.classList.remove('field-edited');
+        }
+      }
+
+      recordHumanEdit();
+      checkMathReconciliation();
+    }
+
+    function revertField(field) {
+      const orig = originalExtracted[field];
+      currentInvoice[field] = orig;
+      const inputEl = document.getElementById(`field${capitalize(field)}`);
+      if (inputEl) {
+        inputEl.value = orig;
+        inputEl.classList.remove('field-edited');
+      }
+      const diffBadge = document.getElementById(`diff${capitalize(field)}`);
+      if (diffBadge) diffBadge.classList.remove('show');
+
+      checkMathReconciliation();
+    }
+
+    function resetDiffBadges() {
+      ['Vendor', 'InvNum', 'Date', 'DueDate', 'TaxId', 'Currency'].forEach(f => {
+        const b = document.getElementById(`diff${f}`);
+        const inp = document.getElementById(`field${f}`);
+        if (b) b.classList.remove('show');
+        if (inp) inp.classList.remove('field-edited');
+      });
+    }
+
+    function recordHumanEdit() {
+      humanEditsCount++;
+      updateDiffCounter();
+    }
+
+    function updateDiffCounter() {
+      const wrapper = document.getElementById('diffCounterWrapper');
+      const counter = document.getElementById('diffCounter');
+      if (humanEditsCount > 0) {
+        wrapper.style.display = 'block';
+        counter.innerText = `✎ ${humanEditsCount} Human Edit${humanEditsCount > 1 ? 's' : ''} Tracked`;
+      } else {
+        wrapper.style.display = 'none';
+      }
+      currentInvoice.human_edits = humanEditsCount;
+    }
+
+    function checkMathReconciliation() {
       const subtotal = parseFloat(document.getElementById('fieldSubtotal').value) || 0.0;
       const tax = parseFloat(document.getElementById('fieldTax').value) || 0.0;
       const total = parseFloat(document.getElementById('fieldTotal').value) || 0.0;
+      const curr = currentInvoice.currency === 'EUR' ? '€' : '$';
 
       const expectedTotal = parseFloat((subtotal + tax).toFixed(2));
-      const isReconciled = Math.abs(expectedTotal - total) <= 0.05;
+      const discrepancy = Math.abs(expectedTotal - total);
+      const isReconciled = discrepancy <= 0.05;
 
       const badge = document.getElementById('mathStatusBadge');
+      const mismatchBanner = document.getElementById('mismatchBanner');
+
       if (isReconciled) {
-        badge.className = "badge-check valid";
-        badge.innerHTML = "✓ Math Reconciled ($" + subtotal.toFixed(2) + " + $" + tax.toFixed(2) + " = $" + total.toFixed(2) + ")";
+        badge.className = "recon-status recon-pass";
+        badge.innerHTML = `✓ Math Reconciled (${curr}${subtotal.toFixed(2)} + ${curr}${tax.toFixed(2)} = ${curr}${total.toFixed(2)})`;
+        mismatchBanner.style.display = 'none';
       } else {
-        badge.className = "badge-check invalid";
-        badge.innerHTML = "✕ Math Discrepancy (Expected: $" + expectedTotal.toFixed(2) + " vs Total: $" + total.toFixed(2) + ")";
+        badge.className = "recon-status recon-fail";
+        const diffAmt = total - expectedTotal;
+        const sign = diffAmt > 0 ? '+' : '';
+        badge.innerHTML = `✕ Math Mismatch (${sign}${curr}${diffAmt.toFixed(2)})`;
+        mismatchBanner.style.display = 'block';
+        document.getElementById('mismatchDiff').innerText = `${sign}${curr}${diffAmt.toFixed(2)}`;
       }
 
       currentInvoice.subtotal = subtotal;
@@ -869,91 +1686,203 @@ Balance Due: $961.20`
     }
 
     function approveAndSaveInvoice() {
-      readFormValues();
+      syncAllFormValues();
       currentInvoice.status = "APPROVED";
-      saveRecord(currentInvoice);
-      alert("Invoice " + currentInvoice.invoice_number + " approved and saved to audit ledger.");
+      persistRecord(currentInvoice);
+      alert(`✓ Invoice ${currentInvoice.invoice_number} approved and recorded in audit ledger.`);
     }
 
     function flagForAudit() {
-      readFormValues();
-      currentInvoice.status = "FLAGGED_FOR_AUDIT";
-      saveRecord(currentInvoice);
-      alert("Invoice " + currentInvoice.invoice_number + " flagged for manual auditor review.");
+      syncAllFormValues();
+      currentInvoice.status = "FLAGGED_AUDIT";
+      persistRecord(currentInvoice);
+      alert(`⚠️ Invoice ${currentInvoice.invoice_number} flagged for manual auditor review.`);
     }
 
-    function readFormValues() {
+    function syncAllFormValues() {
       currentInvoice.vendor = document.getElementById('fieldVendor').value;
       currentInvoice.invoice_number = document.getElementById('fieldInvNum').value;
       currentInvoice.date = document.getElementById('fieldDate').value;
       currentInvoice.due_date = document.getElementById('fieldDueDate').value;
       currentInvoice.tax_id = document.getElementById('fieldTaxId').value;
       currentInvoice.currency = document.getElementById('fieldCurrency').value;
+      currentInvoice.subtotal = parseFloat(document.getElementById('fieldSubtotal').value) || 0.0;
+      currentInvoice.tax = parseFloat(document.getElementById('fieldTax').value) || 0.0;
+      currentInvoice.total = parseFloat(document.getElementById('fieldTotal').value) || 0.0;
     }
 
-    function saveRecord(rec) {
-      // Remove any prior entry with matching invoice_number to update
-      savedInvoices = savedInvoices.filter(i => i.invoice_number !== rec.invoice_number);
-      savedInvoices.unshift({ ...rec, saved_at: new Date().toLocaleTimeString() });
-      localStorage.setItem('invoiceflow_records', JSON.stringify(savedInvoices));
-      renderHistory();
-      updateDashboardStats();
-      
-      // Attempt backend persistence if server online
+    function persistRecord(inv) {
+      savedInvoices = savedInvoices.filter(i => i.invoice_number !== inv.invoice_number);
+      savedInvoices.unshift({ ...inv, saved_at: new Date().toLocaleTimeString() });
+      localStorage.setItem('invoiceflow_records_v2', JSON.stringify(savedInvoices));
+      renderHistoryTable();
+      updateKpis();
+
+      // Attempt optional backend persistence
       fetch('http://localhost:5000/api/invoices/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rec)
+        body: JSON.stringify(inv)
       }).catch(() => {});
     }
 
-    function renderHistory() {
+    // AUDIT LEDGER TABLE & FILTERING / PAGINATION
+    function setAuditFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        if (btn.innerText.toUpperCase() === filter) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      currentPage = 1;
+      renderHistoryTable();
+    }
+
+    function sortAudit(col) {
+      if (currentSort.col === col) {
+        currentSort.asc = !currentSort.asc;
+      } else {
+        currentSort.col = col;
+        currentSort.asc = true;
+      }
+      renderHistoryTable();
+    }
+
+    function getFilteredAuditData() {
+      let data = [...savedInvoices];
+      if (currentFilter === 'APPROVED') {
+        data = data.filter(i => i.status === 'APPROVED');
+      } else if (currentFilter === 'FLAGGED') {
+        data = data.filter(i => i.status === 'FLAGGED_AUDIT');
+      } else if (currentFilter === 'DISCREPANCY') {
+        data = data.filter(i => i.math_reconciled === false);
+      }
+
+      data.sort((a, b) => {
+        let valA = a[currentSort.col];
+        let valB = b[currentSort.col];
+        if (typeof valA === 'string') valA = valA.toLowerCase();
+        if (typeof valB === 'string') valB = valB.toLowerCase();
+        if (valA < valB) return currentSort.asc ? -1 : 1;
+        if (valA > valB) return currentSort.asc ? 1 : -1;
+        return 0;
+      });
+
+      return data;
+    }
+
+    function renderHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       tbody.innerHTML = '';
-      if (!savedInvoices.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">No saved invoices yet. Extract and approve invoices to build audit ledger.</td></tr>';
+      const allFiltered = getFilteredAuditData();
+      
+      const total = allFiltered.length;
+      const start = (currentPage - 1) * pageSize;
+      const pageData = allFiltered.slice(start, start + pageSize);
+
+      document.getElementById('tableMetaInfo').innerText = `Showing ${Math.min(start + 1, total)}–${Math.min(start + pageData.length, total)} of ${total} records`;
+      document.getElementById('btnPrevPage').disabled = (currentPage === 1);
+      document.getElementById('btnNextPage').disabled = (start + pageSize >= total);
+
+      if (pageData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 24px;">No invoices match the current filter.</td></tr>`;
         return;
       }
 
-      savedInvoices.forEach(inv => {
+      pageData.forEach((inv, index) => {
         const tr = document.createElement('tr');
-        const statusColor = inv.status === 'APPROVED' ? 'var(--green)' : 'var(--amber)';
-        const mathColor = inv.math_reconciled !== false ? 'var(--green)' : 'var(--red)';
+        tr.className = 'clickable-row';
+        const isReconciled = inv.math_reconciled !== false;
+        const mathBadge = isReconciled 
+          ? `<span style="color: var(--mint); font-weight: 700;">✓ Pass</span>` 
+          : `<span style="color: var(--red); font-weight: 700;">✕ Mismatch</span>`;
+        const statusBadge = inv.status === 'APPROVED' 
+          ? `<span style="color: var(--mint); font-weight: 700;">APPROVED</span>` 
+          : `<span style="color: var(--amber); font-weight: 700;">FLAGGED</span>`;
+        const curr = inv.currency === 'EUR' ? '€' : '$';
+
         tr.innerHTML = `
-          <td style="color: #fff; font-weight: 700;">${inv.invoice_number}</td>
+          <td style="font-weight: 700; color: #fff;">${inv.invoice_number}</td>
           <td>${inv.vendor}</td>
-          <td>${inv.date}</td>
-          <td style="color: var(--peach); font-weight: 600;">$${inv.total.toFixed(2)}</td>
-          <td><span class="conf-tag conf-high">96%</span></td>
-          <td><span style="color: ${mathColor}; font-weight: 700;">${inv.math_reconciled !== false ? '✓ Passed' : '✕ Warning'}</span></td>
-          <td><span style="color: ${statusColor}; font-weight: 700;">${inv.status}</span></td>
+          <td style="color: var(--text-dim);">${inv.date}</td>
+          <td style="text-align: right; color: var(--mint); font-weight: 700;">${curr}${inv.total.toFixed(2)}</td>
+          <td><span class="conf-pill conf-high">${(inv.confidence_score || inv.confidence?.overall || 96.0).toFixed(1)}%</span></td>
+          <td>${mathBadge}</td>
+          <td style="text-align: center; color: ${inv.human_edits ? 'var(--amber)' : 'var(--text-dim)'};">${inv.human_edits || 0}</td>
+          <td>${statusBadge}</td>
+          <td style="text-align: center;">
+            <button class="filter-tab" style="font-size: 11px; padding: 2px 8px;" onclick="openDetailModal(${start + index})">Inspect</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function updateDashboardStats() {
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; renderHistoryTable(); }
+    }
+    function nextPage() {
+      const total = getFilteredAuditData().length;
+      if (currentPage * pageSize < total) { currentPage++; renderHistoryTable(); }
+    }
+
+    // Modal Inspection
+    function openDetailModal(dataIndex) {
+      const record = getFilteredAuditData()[dataIndex];
+      if (!record) return;
+
+      document.getElementById('modalTitle').innerText = `Invoice ${record.invoice_number} — Audit Record`;
+      document.getElementById('modalSub').innerText = `Vendor: ${record.vendor} | Date: ${record.date} | Status: ${record.status}`;
+
+      const modalItemsBody = document.getElementById('modalItemsBody');
+      modalItemsBody.innerHTML = '';
+      const curr = record.currency === 'EUR' ? '€' : '$';
+      (record.line_items || []).forEach(it => {
+        const r = document.createElement('tr');
+        r.innerHTML = `
+          <td>${escapeHtml(it.description)}</td>
+          <td>${it.quantity}</td>
+          <td>${curr}${it.unit_price.toFixed(2)}</td>
+          <td style="text-align: right; color: var(--mint);">${curr}${it.total.toFixed(2)}</td>
+        `;
+        modalItemsBody.appendChild(r);
+      });
+
+      document.getElementById('modalJson').innerText = JSON.stringify(record, null, 2);
+      document.getElementById('detailModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('open');
+    }
+
+    // KPIs & Stats
+    function updateKpis() {
       document.getElementById('statProcessed').innerText = savedInvoices.length;
       const totalVal = savedInvoices.reduce((acc, it) => acc + (it.total || 0), 0);
       document.getElementById('statTotalVal').innerText = '$' + totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      
+      const totalMathReconciled = savedInvoices.filter(i => i.math_reconciled !== false).length;
+      const reconRate = savedInvoices.length > 0 ? ((totalMathReconciled / savedInvoices.length) * 100).toFixed(0) : 100;
+      document.getElementById('statReconRate').innerText = `${reconRate}%`;
+      const discrepancies = savedInvoices.length - totalMathReconciled;
+      document.getElementById('statReconSub').innerText = `${discrepancies} math discrepancy flagged`;
     }
 
     function clearHistory() {
-      if (confirm("Clear local invoice history?")) {
+      if (confirm("Reset audit ledger history?")) {
         savedInvoices = [];
-        localStorage.removeItem('invoiceflow_records');
-        renderHistory();
-        updateDashboardStats();
+        localStorage.removeItem('invoiceflow_records_v2');
+        renderHistoryTable();
+        updateKpis();
       }
     }
 
     function exportCSV() {
       if (!savedInvoices.length) {
-        alert("No saved invoices to export. Please approve at least one invoice.");
+        alert("No saved records to export. Please approve an invoice first.");
         return;
       }
-
-      const headers = ["Invoice_Number", "Vendor", "Date", "Due_Date", "Currency", "Subtotal", "Tax", "Total", "Math_Reconciled", "Status"];
+      const headers = ["Invoice_Number", "Vendor", "Date", "Due_Date", "Currency", "Subtotal", "Tax", "Total", "Confidence", "Human_Edits", "Math_Reconciled", "Status"];
       const rows = savedInvoices.map(i => [
         `"${i.invoice_number}"`,
         `"${i.vendor}"`,
@@ -963,6 +1892,8 @@ Balance Due: $961.20`
         i.subtotal.toFixed(2),
         i.tax.toFixed(2),
         i.total.toFixed(2),
+        (i.confidence_score || 95).toFixed(1),
+        i.human_edits || 0,
         i.math_reconciled !== false ? "PASSED" : "FAILED",
         `"${i.status}"`
       ]);
@@ -971,13 +1902,25 @@ Balance Due: $961.20`
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "invoiceflow_audit_report.csv");
+      link.setAttribute("download", "invoiceflow_audit_export.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
-    init();
+    function capitalize(str) {
+      if (!str) return '';
+      if (str === 'invoice_number') return 'InvNum';
+      if (str === 'due_date') return 'DueDate';
+      if (str === 'tax_id') return 'TaxId';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    window.onload = init;
   </script>
 </body>
 </html>
