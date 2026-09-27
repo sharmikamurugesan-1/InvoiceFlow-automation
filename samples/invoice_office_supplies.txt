@@ -1,0 +1,9 @@
+Apex Office Supplies Co.
+INV: APX-44109
+Date: 2025-02-02
+Tax ID: VAT-991204
+
+Line Items:
+- Ergonomic Chairs x 4
+- Monitor Mounts x 4
+Balance Due: $890.00

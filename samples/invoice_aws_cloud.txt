@@ -1,0 +1,10 @@
+Amazon Web Services Inc.
+Invoice Number: INV-9812401
+Invoice Date: 2025-01-14
+Tax ID: GSTIN-88912A
+Bill To: Client Technologies Ltd.
+
+Description: Cloud EC2 & S3 Hosting Services
+Period: Dec 2024 - Jan 2025
+Amount Due: $1,450.00
+Grand Total: $1,450.00

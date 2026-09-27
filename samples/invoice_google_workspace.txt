@@ -1,0 +1,9 @@
+Google Workspace Billing
+Invoice #: GOOG-2025-771
+Date: 2025-01-20
+Tax ID: GSTIN-11223B
+
+Items:
+- 25 User Licenses Enterprise Plus
+Total Amount: $625.50
+Status: Paid via Corporate Card
