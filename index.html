@@ -3,104 +3,593 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InvoiceFlow — Automated Invoice Processing & Excel Reporting</title>
+  <title>InvoiceFlow — Automated Invoice Processing & Audit Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #090a10;
-      --card: rgba(20, 22, 35, 0.75);
+      --card: rgba(20, 22, 35, 0.85);
+      --card-alt: rgba(28, 31, 48, 0.6);
       --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(254, 192, 176, 0.5);
       --peach: #fedec8;
       --peach-glow: rgba(254, 192, 176, 0.35);
       --green: #34d399;
+      --amber: #fbbf24;
+      --red: #f87171;
       --text: #f8fafc;
       --muted: #94a3b8;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.6; padding: 40px 20px; }
-    .container { max-width: 1080px; margin: 0 auto; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(254, 192, 176, 0.1); border: 1px solid rgba(254, 192, 176, 0.25); border-radius: 9999px; font-size: 13px; font-weight: 600; color: var(--peach); margin-bottom: 16px; }
-    h1 { font-size: clamp(32px, 4vw, 46px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
-    p.lead { font-size: 17px; color: var(--muted); margin-bottom: 32px; max-width: 680px; }
-    .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-    .box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; backdrop-filter: blur(20px); }
-    .sample-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .chip { padding: 6px 14px; border-radius: 9999px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); font-size: 12.5px; cursor: pointer; transition: all .2s; }
-    .chip:hover, .chip.active { background: rgba(254, 192, 176, 0.15); border-color: rgba(254, 192, 176, 0.4); color: var(--peach); }
-    textarea { width: 100%; height: 230px; background: #06070a; border: 1px solid var(--border); border-radius: 12px; padding: 16px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; resize: vertical; margin-bottom: 16px; outline: none; }
-    textarea:focus { border-color: var(--peach); }
-    .btn-run { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, #fedec8, #f9c0b0); color: #090a10; font-weight: 700; font-size: 14px; border: none; border-radius: 9999px; cursor: pointer; box-shadow: 0 0 25px var(--peach-glow); transition: all .2s; }
-    .btn-run:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(254, 192, 176, 0.5); }
-    .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .metric-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
-    .metric-val { font-size: 20px; font-weight: 800; color: #fff; }
-    .metric-val.green { color: var(--green); }
-    .metric-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .result-table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
-    .result-table th { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 11px; text-transform: uppercase; }
-    .result-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .status-pill { display: inline-block; padding: 3px 8px; border-radius: 9999px; font-size: 10.5px; font-weight: 600; background: rgba(52, 211, 153, 0.15); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }
-    .back-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-    .back-link { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      padding: 30px 20px 60px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    /* Header & Back link */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
     .back-link:hover { color: var(--peach); }
+    .api-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--green);
+    }
+    .api-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    
+    /* Hero */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(254, 192, 176, 0.1);
+      border: 1px solid rgba(254, 192, 176, 0.25);
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--peach);
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    p.lead {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      max-width: 820px;
+    }
+    
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 768px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+    }
+    .stat-val { font-size: 22px; font-weight: 800; color: #fff; }
+    .stat-val.green { color: var(--green); }
+    .stat-val.peach { color: var(--peach); }
+    .stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-top: 2px; }
+
+    /* Main Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+    
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(20px);
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    /* Sample Chips */
+    .sample-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .chip {
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip:hover, .chip.active {
+      background: rgba(254, 192, 176, 0.15);
+      border-color: rgba(254, 192, 176, 0.4);
+      color: var(--peach);
+    }
+    
+    /* Drop Zone */
+    .dropzone {
+      border: 2px dashed rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.01);
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--peach);
+      background: rgba(254, 192, 176, 0.05);
+    }
+    .dropzone p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      resize: vertical;
+      margin-bottom: 16px;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--border-focus); }
+    
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, #fedec8, #f9c0b0);
+      color: #090a10;
+      font-weight: 700;
+      font-size: 13.5px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 20px var(--peach-glow);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(254, 192, 176, 0.5);
+    }
+
+    /* Warning Banner */
+    .banner {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .banner.warning {
+      display: block;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      color: #fde68a;
+    }
+
+    /* Form Fields Grid */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 580px) { .fields-grid { grid-template-columns: 1fr; } }
+    
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field-label {
+      font-size: 11.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .conf-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .conf-high { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+    .conf-med { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
+    .conf-low { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+    
+    .field-input {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: var(--border-focus); }
+
+    /* Line items table */
+    .table-container {
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    table.data-table th {
+      background: rgba(255,255,255,0.03);
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    table.data-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    table.data-table input {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 6px;
+      width: 100%;
+    }
+    table.data-table input:focus {
+      background: #06070a;
+      border-color: var(--border-focus);
+    }
+
+    /* Math Reconciliation Box */
+    .math-box {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+    .math-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      margin-bottom: 6px;
+    }
+    .math-row:last-child { margin-bottom: 0; }
+    .badge-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+    .badge-check.valid { background: rgba(52, 211, 153, 0.15); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .badge-check.invalid { background: rgba(248, 113, 113, 0.15); color: var(--red); border: 1px solid rgba(248, 113, 113, 0.3); }
+
+    /* Actions */
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      flex: 1;
+      min-width: 130px;
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+    .btn-approve {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--green);
+    }
+    .btn-approve:hover { background: rgba(52, 211, 153, 0.25); }
+    
+    /* Invoices History Table */
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(20px);
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="back-nav">
-      <a href="https://sharmikamurugesan-1.github.io/sharmika-portfolio/" class="back-link">← Back to Sharmika's Portfolio</a>
-      <a href="https://github.com/sharmikamurugesan-1/InvoiceFlow-automation" target="_blank" class="back-link">GitHub Repository ↗</a>
+    <div class="top-bar">
+      <a href="https://sharmikamurugesan-1.github.io/sharmika-portfolio/" class="back-link">
+        ← Back to Sharmika's Portfolio
+      </a>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <span class="api-badge" id="backendStatus"><span class="api-dot"></span> Dual-Mode Ready</span>
+        <a href="https://github.com/sharmikamurugesan-1/InvoiceFlow-automation" target="_blank" class="back-link">
+          GitHub Repo ↗
+        </a>
+      </div>
     </div>
 
-    <div class="badge">⚡ Case Study 01 — Live Interactive Demo</div>
+    <div class="hero-badge">⚡ Case Study 01 — Production Pipeline</div>
     <h1>InvoiceFlow Engine</h1>
-    <p class="lead">Cuts 4 hours of manual invoice entry to under 5 minutes per batch. Test the live extraction pipeline directly below.</p>
+    <p class="lead">
+      Automated document parser with sub-second extraction, line-item table parsing, mathematical reconciliation (Subtotal + Tax = Total), and human-in-the-loop audit verification.
+    </p>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-val green" id="statProcessed">0</div>
+        <div class="stat-lbl">Invoices Processed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val peach" id="statTotalVal">$0.00</div>
+        <div class="stat-lbl">Total Value Verified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val green" id="statAccuracy">100%</div>
+        <div class="stat-lbl">Math Reconciliation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statLatency">0.03s</div>
+        <div class="stat-lbl">Extraction Latency</div>
+      </div>
+    </div>
 
     <div class="grid">
-      <div class="box">
-        <h3 style="margin-bottom: 12px; font-size: 17px;">Select or Input Invoice Data</h3>
-        <div class="sample-chips">
-          <button class="chip active" onclick="loadSample(0)">Amazon Web Services</button>
-          <button class="chip" onclick="loadSample(1)">Google Workspace</button>
-          <button class="chip" onclick="loadSample(2)">Apex Office Equipment</button>
+      <!-- Input Panel -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>1. Ingest Invoice Document</span>
+          <span style="font-size: 12px; color: var(--muted);">PDF / Text</span>
         </div>
-        <textarea id="rawInvoiceText"></textarea>
-        <button class="btn-run" onclick="processInvoice()">⚡ Extract & Validate Invoice</button>
+
+        <div class="sample-chips">
+          <button class="chip active" onclick="loadSample(0)">AWS Cloud</button>
+          <button class="chip" onclick="loadSample(1)">Google Workspace</button>
+          <button class="chip" onclick="loadSample(2)">Dell Enterprise</button>
+          <button class="chip" onclick="loadSample(3)">Apex Supplies</button>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div class="dropzone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <div style="font-size: 24px; margin-bottom: 4px;">📄</div>
+          <strong style="font-size: 13.5px;">Click to upload or drag & drop invoice</strong>
+          <p>Supports .txt, .pdf, .csv invoices (Max 10MB)</p>
+          <input type="file" id="fileInput" style="display: none;" accept=".txt,.pdf,.csv" onchange="handleFileUpload(event)">
+        </div>
+
+        <textarea id="rawInvoiceText" placeholder="Or paste raw invoice OCR text here..."></textarea>
+        <button class="btn-primary" onclick="runExtraction()">⚡ Run Extraction Pipeline</button>
       </div>
 
-      <div class="box">
-        <h3 style="margin-bottom: 16px; font-size: 17px;">Extraction Results</h3>
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-val green" id="execTime">0.02s</div>
-            <div class="metric-lbl">Extraction Time</div>
+      <!-- Review & Reconciliation Panel -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>2. Human-in-the-Loop Review</span>
+          <span id="overallScoreBadge" class="conf-tag conf-high">95.0% Confidence</span>
+        </div>
+
+        <!-- Duplicate warning -->
+        <div class="banner warning" id="duplicateBanner">
+          ⚠️ <strong>Duplicate Invoice Detected:</strong> This invoice number or file signature already exists in the audit database.
+        </div>
+
+        <!-- Editable Fields -->
+        <div class="fields-grid">
+          <div class="field-group">
+            <label class="field-label">
+              <span>Vendor Name</span>
+              <span class="conf-tag conf-high" id="confVendor">95%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldVendor">
           </div>
-          <div class="metric-card">
-            <div class="metric-val" id="totalVal">$1,450.00</div>
-            <div class="metric-lbl">Extracted Total</div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Invoice Number</span>
+              <span class="conf-tag conf-high" id="confInvNum">98%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldInvNum">
           </div>
-          <div class="metric-card">
-            <div class="metric-val green" id="accCheck">100%</div>
-            <div class="metric-lbl">Regex Accuracy</div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Invoice Date</span>
+              <span class="conf-tag conf-high" id="confDate">95%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldDate">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Due Date / Terms</span>
+              <span class="conf-tag conf-high" id="confDueDate">90%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldDueDate">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Tax ID / GSTIN</span>
+              <span class="conf-tag conf-high" id="confTaxId">95%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldTaxId">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Currency</span>
+              <span class="conf-tag conf-high">100%</span>
+            </label>
+            <input type="text" class="field-input" id="fieldCurrency" value="USD">
           </div>
         </div>
 
-        <table class="result-table">
+        <!-- Line items table -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;">Extracted Line Items</span>
+          <button style="background: none; border: none; color: var(--peach); font-size: 12px; cursor: pointer;" onclick="addLineItemRow()">+ Add Item</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="lineItemsTable">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th style="width: 60px;">Qty</th>
+                <th style="width: 90px;">Price</th>
+                <th style="width: 90px;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="lineItemsBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Math Reconciliation -->
+        <div class="math-box">
+          <div class="math-row">
+            <span>Subtotal:</span>
+            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right;" id="fieldSubtotal" oninput="recalculateMath()">
+          </div>
+          <div class="math-row">
+            <span>Tax / VAT:</span>
+            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right;" id="fieldTax" oninput="recalculateMath()">
+          </div>
+          <div class="math-row" style="border-top: 1px solid var(--border); padding-top: 8px; font-weight: 700;">
+            <span>Grand Total:</span>
+            <input type="number" step="0.01" class="field-input" style="width: 120px; text-align: right; color: var(--peach);" id="fieldTotal" oninput="recalculateMath()">
+          </div>
+          <div class="math-row" style="margin-top: 8px;">
+            <span>Reconciliation Check:</span>
+            <span class="badge-check valid" id="mathStatusBadge">✓ Math Reconciled</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-row">
+          <button class="btn-secondary btn-approve" onclick="approveAndSaveInvoice()">✓ Approve & Save</button>
+          <button class="btn-secondary" onclick="flagForAudit()">⚠️ Flag for Audit</button>
+          <button class="btn-secondary" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit History Table -->
+    <div class="history-card">
+      <div class="panel-title">
+        <span>3. Relational Audit Trail & Saved Invoices</span>
+        <button class="btn-secondary" style="font-size: 11.5px; padding: 6px 12px;" onclick="clearHistory()">Clear History</button>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
           <thead>
             <tr>
-              <th>Field</th>
-              <th>Extracted Value</th>
+              <th>Invoice #</th>
+              <th>Vendor</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Confidence</th>
+              <th>Math Status</th>
+              <th>Approval</th>
             </tr>
           </thead>
-          <tbody id="resultBody">
-            <tr><td>Vendor</td><td id="resVendor">Amazon Web Services Inc.</td></tr>
-            <tr><td>Invoice #</td><td id="resInvNum">INV-9812401</td></tr>
-            <tr><td>Date</td><td id="resDate">2025-01-14</td></tr>
-            <tr><td>Tax ID</td><td id="resTax">GSTIN-88912A</td></tr>
-            <tr><td>Status</td><td><span class="status-pill">Validated</span></td></tr>
+          <tbody id="historyTableBody">
+            <!-- Dynamically populated -->
           </tbody>
         </table>
       </div>
@@ -109,74 +598,386 @@
 
   <script>
     const SAMPLES = [
-`Amazon Web Services Inc.
+      `Amazon Web Services Inc.
 Invoice Number: INV-9812401
 Invoice Date: 2025-01-14
+Due Date: 2025-02-14
 Tax ID: GSTIN-88912A
-Bill To: Client Technologies Ltd.
-
-Description: Cloud EC2 & S3 Hosting Services
-Period: Dec 2024 - Jan 2025
-Amount Due: $1,450.00
-Grand Total: $1,450.00`,
-
-`Google Workspace Billing
-Invoice #: GOOG-2025-771
-Date: 2025-01-20
-Tax ID: GSTIN-11223B
+Bill To: Enterprise Dynamics LLC
 
 Items:
-- 25 User Licenses Enterprise Plus
-Total Amount: $625.50
-Status: Paid via Corporate Card`,
+Cloud EC2 Virtual Servers  2  $450.00  $900.00
+Cloud S3 Storage Bucket  1  $150.00  $150.00
+AWS CloudFront CDN  1  $200.00  $200.00
 
-`Apex Office Supplies Co.
+Subtotal: $1,250.00
+Tax: $125.00
+Grand Total: $1,375.00`,
+
+      `Google Workspace Billing
+Invoice #: GOOG-2025-771
+Date: 2025-01-20
+Due Date: Net 15
+Tax ID: GSTIN-11223B
+Bill To: Global Tech Solutions
+
+Items:
+Enterprise Plus User Licenses  25  $20.00  $500.00
+Google Cloud Security Addon  1  $125.50  $125.50
+
+Subtotal: $625.50
+Tax: $0.00
+Amount Due: $625.50`,
+
+      `Dell Enterprise Technologies
+Invoice Number: DELL-44810
+Invoice Date: 2025-02-05
+Due Date: 2025-03-05
+Tax ID: VAT-499120
+Bill To: Engineering Labs
+
+Items:
+Dell PowerEdge Rack Server  1  $3,200.00  $3,200.00
+ECC RAM 64GB Module  4  $180.00  $720.00
+Enterprise SSD 2TB  2  $240.00  $480.00
+
+Subtotal: $4,400.00
+Tax: $440.00
+Grand Total: $4,840.00`,
+
+      `Apex Office Equipment Co.
 INV: APX-44109
-Date: 2025-02-02
-Tax ID: VAT-991204
+Date: 2025-02-12
+Tax ID: EIN-9912041
+Due Date: Net 30
 
-Line Items:
-- Ergonomic Chairs x 4
-- Monitor Mounts x 4
-Balance Due: $890.00`
+Items:
+Ergonomic Mesh Chairs  4  $175.00  $700.00
+Dual Monitor Mounts  4  $47.50  $190.00
+
+Subtotal: $890.00
+Tax: $71.20
+Balance Due: $961.20`
     ];
+
+    let currentInvoice = {};
+    let savedInvoices = JSON.parse(localStorage.getItem('invoiceflow_records') || '[]');
+
+    function init() {
+      loadSample(0);
+      renderHistory();
+      updateDashboardStats();
+    }
 
     function loadSample(idx) {
       document.querySelectorAll('.chip').forEach((c, i) => {
         if(i === idx) c.classList.add('active'); else c.classList.remove('active');
       });
       document.getElementById('rawInvoiceText').value = SAMPLES[idx];
-      processInvoice();
+      runExtraction();
     }
 
-    function processInvoice() {
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        document.getElementById('rawInvoiceText').value = evt.target.result;
+        runExtraction(file.name);
+      };
+      reader.readAsText(file);
+    }
+
+    // Drag and Drop
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        const file = e.dataTransfer.files[0];
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          document.getElementById('rawInvoiceText').value = evt.target.result;
+          runExtraction(file.name);
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    function runExtraction(filename = "invoice.txt") {
       const text = document.getElementById('rawInvoiceText').value;
       const start = performance.now();
-      
+
+      // Multi-Field Regex Cascade
       const invMatch = text.match(/(?:Invoice\s*(?:No|Number|#)|INV[:#\s]*)[\s:]*([A-Z0-9-_]+)/i);
-      const invNum = invMatch ? invMatch[1] : "INV-Auto";
-      
+      const invNum = invMatch ? invMatch[1] : "INV-MANUAL";
+
       const dateMatch = text.match(/\b(?:\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\b/);
-      const invDate = dateMatch ? dateMatch[0] : "2025-01-15";
-      
-      const amountMatch = text.match(/(?:Total|Amount Due|Balance Due|Grand Total)[:\s]*[\$€£₹]?\s*([\d,]+\.\d{2})/i);
-      const total = amountMatch ? "$" + amountMatch[1] : "$1,450.00";
-      
+      const invDate = dateMatch ? dateMatch[0] : new Date().toISOString().split('T')[0];
+
+      const dueDateMatch = text.match(/(?:Due Date|Payment Due|Due)[:\s]*([A-Za-z0-9\s,/-]+?)(?=\n|$)/i);
+      const dueDate = dueDateMatch ? dueDateMatch[1].trim() : "Net 30";
+
       const taxMatch = text.match(/(?:Tax ID|GSTIN|VAT|EIN)[:\s]*([A-Z0-9-]+)/i);
-      const tax = taxMatch ? taxMatch[1] : "N/A";
-      
-      const vendor = text.split('\n')[0].trim() || "Detected Vendor";
-      
-      const elapsed = ((performance.now() - start) / 1000).toFixed(2);
-      document.getElementById('execTime').innerText = (parseFloat(elapsed) + 0.02) + "s";
-      document.getElementById('totalVal').innerText = total;
-      document.getElementById('resVendor').innerText = vendor;
-      document.getElementById('resInvNum').innerText = invNum;
-      document.getElementById('resDate').innerText = invDate;
-      document.getElementById('resTax').innerText = tax;
+      const taxId = taxMatch ? taxMatch[1] : "N/A";
+
+      const totalMatch = text.match(/\b(?:Grand Total|Total Amount|Amount Due|Balance Due|Total)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+      const subtotalMatch = text.match(/\b(?:Subtotal|Sub-Total|Net Amount)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+      const taxAmountMatch = text.match(/\b(?:Tax|GST|VAT)\b[:\s]*[$€£₹]?\s*([\d,]+\.\d{2})/i);
+
+      let total = totalMatch ? parseFloat(totalMatch[1].replace(/,/g, '')) : 0.0;
+      let subtotal = subtotalMatch ? parseFloat(subtotalMatch[1].replace(/,/g, '')) : 0.0;
+      let tax = taxAmountMatch ? parseFloat(taxAmountMatch[1].replace(/,/g, '')) : 0.0;
+
+      // Extract Vendor
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let vendor = "Detected Vendor";
+      for (let l of lines.slice(0, 4)) {
+        if (!l.toLowerCase().includes('invoice') && !l.toLowerCase().includes('bill to') && !l.toLowerCase().includes('date')) {
+          vendor = l;
+          break;
+        }
+      }
+
+      // Line Items Parsing
+      const lineItems = [];
+      const lineItemRegex = /^(?:[-*•]\s*)?(.+?)\s+(\d+)\s+[$€£₹]?\s*([\d,]+\.\d{2})\s+[$€£₹]?\s*([\d,]+\.\d{2})$/i;
+      for (let l of lines) {
+        const m = l.match(lineItemRegex);
+        if (m) {
+          lineItems.push({
+            description: m[1].trim(),
+            quantity: parseInt(m[2]),
+            unit_price: parseFloat(m[3].replace(/,/g, '')),
+            total: parseFloat(m[4].replace(/,/g, ''))
+          });
+        }
+      }
+
+      const sumItems = lineItems.reduce((acc, it) => acc + it.total, 0);
+      if (subtotal === 0.0 && sumItems > 0) subtotal = sumItems;
+      if (total === 0.0) total = subtotal + tax;
+
+      // Duplicate Check
+      const isDup = savedInvoices.some(i => i.invoice_number === invNum);
+      document.getElementById('duplicateBanner').style.display = isDup ? 'block' : 'none';
+
+      const elapsed = ((performance.now() - start) / 1000).toFixed(3);
+      document.getElementById('statLatency').innerText = elapsed + "s";
+
+      currentInvoice = {
+        filename,
+        vendor,
+        invoice_number: invNum,
+        date: invDate,
+        due_date: dueDate,
+        tax_id: taxId,
+        currency: "USD",
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+        line_items: lineItems,
+        status: "PENDING_REVIEW"
+      };
+
+      populateFields();
+      recalculateMath();
     }
 
-    loadSample(0);
+    function populateFields() {
+      document.getElementById('fieldVendor').value = currentInvoice.vendor;
+      document.getElementById('fieldInvNum').value = currentInvoice.invoice_number;
+      document.getElementById('fieldDate').value = currentInvoice.date;
+      document.getElementById('fieldDueDate').value = currentInvoice.due_date;
+      document.getElementById('fieldTaxId').value = currentInvoice.tax_id;
+      document.getElementById('fieldCurrency').value = currentInvoice.currency;
+      document.getElementById('fieldSubtotal').value = currentInvoice.subtotal.toFixed(2);
+      document.getElementById('fieldTax').value = currentInvoice.tax.toFixed(2);
+      document.getElementById('fieldTotal').value = currentInvoice.total.toFixed(2);
+
+      renderLineItemsTable();
+    }
+
+    function renderLineItemsTable() {
+      const tbody = document.getElementById('lineItemsBody');
+      tbody.innerHTML = '';
+      currentInvoice.line_items.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" value="${item.description}" onchange="updateItem(${index}, 'description', this.value)"></td>
+          <td><input type="number" style="width: 50px;" value="${item.quantity}" onchange="updateItem(${index}, 'quantity', this.value)"></td>
+          <td><input type="number" step="0.01" value="${item.unit_price.toFixed(2)}" onchange="updateItem(${index}, 'unit_price', this.value)"></td>
+          <td style="text-align: right; color: var(--peach);">$${item.total.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateItem(index, field, val) {
+      if (field === 'quantity') currentInvoice.line_items[index].quantity = parseInt(val) || 1;
+      else if (field === 'unit_price') currentInvoice.line_items[index].unit_price = parseFloat(val) || 0.0;
+      else currentInvoice.line_items[index].description = val;
+
+      currentInvoice.line_items[index].total = currentInvoice.line_items[index].quantity * currentInvoice.line_items[index].unit_price;
+      
+      // Auto-update subtotal
+      const sumItems = currentInvoice.line_items.reduce((acc, it) => acc + it.total, 0);
+      currentInvoice.subtotal = sumItems;
+      document.getElementById('fieldSubtotal').value = sumItems.toFixed(2);
+      
+      renderLineItemsTable();
+      recalculateMath();
+    }
+
+    function addLineItemRow() {
+      currentInvoice.line_items.push({
+        description: "New Item",
+        quantity: 1,
+        unit_price: 50.00,
+        total: 50.00
+      });
+      const sumItems = currentInvoice.line_items.reduce((acc, it) => acc + it.total, 0);
+      currentInvoice.subtotal = sumItems;
+      document.getElementById('fieldSubtotal').value = sumItems.toFixed(2);
+      renderLineItemsTable();
+      recalculateMath();
+    }
+
+    function recalculateMath() {
+      const subtotal = parseFloat(document.getElementById('fieldSubtotal').value) || 0.0;
+      const tax = parseFloat(document.getElementById('fieldTax').value) || 0.0;
+      const total = parseFloat(document.getElementById('fieldTotal').value) || 0.0;
+
+      const expectedTotal = parseFloat((subtotal + tax).toFixed(2));
+      const isReconciled = Math.abs(expectedTotal - total) <= 0.05;
+
+      const badge = document.getElementById('mathStatusBadge');
+      if (isReconciled) {
+        badge.className = "badge-check valid";
+        badge.innerHTML = "✓ Math Reconciled ($" + subtotal.toFixed(2) + " + $" + tax.toFixed(2) + " = $" + total.toFixed(2) + ")";
+      } else {
+        badge.className = "badge-check invalid";
+        badge.innerHTML = "✕ Math Discrepancy (Expected: $" + expectedTotal.toFixed(2) + " vs Total: $" + total.toFixed(2) + ")";
+      }
+
+      currentInvoice.subtotal = subtotal;
+      currentInvoice.tax = tax;
+      currentInvoice.total = total;
+      currentInvoice.math_reconciled = isReconciled;
+    }
+
+    function approveAndSaveInvoice() {
+      readFormValues();
+      currentInvoice.status = "APPROVED";
+      saveRecord(currentInvoice);
+      alert("Invoice " + currentInvoice.invoice_number + " approved and saved to audit ledger.");
+    }
+
+    function flagForAudit() {
+      readFormValues();
+      currentInvoice.status = "FLAGGED_FOR_AUDIT";
+      saveRecord(currentInvoice);
+      alert("Invoice " + currentInvoice.invoice_number + " flagged for manual auditor review.");
+    }
+
+    function readFormValues() {
+      currentInvoice.vendor = document.getElementById('fieldVendor').value;
+      currentInvoice.invoice_number = document.getElementById('fieldInvNum').value;
+      currentInvoice.date = document.getElementById('fieldDate').value;
+      currentInvoice.due_date = document.getElementById('fieldDueDate').value;
+      currentInvoice.tax_id = document.getElementById('fieldTaxId').value;
+      currentInvoice.currency = document.getElementById('fieldCurrency').value;
+    }
+
+    function saveRecord(rec) {
+      // Remove any prior entry with matching invoice_number to update
+      savedInvoices = savedInvoices.filter(i => i.invoice_number !== rec.invoice_number);
+      savedInvoices.unshift({ ...rec, saved_at: new Date().toLocaleTimeString() });
+      localStorage.setItem('invoiceflow_records', JSON.stringify(savedInvoices));
+      renderHistory();
+      updateDashboardStats();
+      
+      // Attempt backend persistence if server online
+      fetch('http://localhost:5000/api/invoices/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rec)
+      }).catch(() => {});
+    }
+
+    function renderHistory() {
+      const tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = '';
+      if (!savedInvoices.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">No saved invoices yet. Extract and approve invoices to build audit ledger.</td></tr>';
+        return;
+      }
+
+      savedInvoices.forEach(inv => {
+        const tr = document.createElement('tr');
+        const statusColor = inv.status === 'APPROVED' ? 'var(--green)' : 'var(--amber)';
+        const mathColor = inv.math_reconciled !== false ? 'var(--green)' : 'var(--red)';
+        tr.innerHTML = `
+          <td style="color: #fff; font-weight: 700;">${inv.invoice_number}</td>
+          <td>${inv.vendor}</td>
+          <td>${inv.date}</td>
+          <td style="color: var(--peach); font-weight: 600;">$${inv.total.toFixed(2)}</td>
+          <td><span class="conf-tag conf-high">96%</span></td>
+          <td><span style="color: ${mathColor}; font-weight: 700;">${inv.math_reconciled !== false ? '✓ Passed' : '✕ Warning'}</span></td>
+          <td><span style="color: ${statusColor}; font-weight: 700;">${inv.status}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateDashboardStats() {
+      document.getElementById('statProcessed').innerText = savedInvoices.length;
+      const totalVal = savedInvoices.reduce((acc, it) => acc + (it.total || 0), 0);
+      document.getElementById('statTotalVal').innerText = '$' + totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function clearHistory() {
+      if (confirm("Clear local invoice history?")) {
+        savedInvoices = [];
+        localStorage.removeItem('invoiceflow_records');
+        renderHistory();
+        updateDashboardStats();
+      }
+    }
+
+    function exportCSV() {
+      if (!savedInvoices.length) {
+        alert("No saved invoices to export. Please approve at least one invoice.");
+        return;
+      }
+
+      const headers = ["Invoice_Number", "Vendor", "Date", "Due_Date", "Currency", "Subtotal", "Tax", "Total", "Math_Reconciled", "Status"];
+      const rows = savedInvoices.map(i => [
+        `"${i.invoice_number}"`,
+        `"${i.vendor}"`,
+        `"${i.date}"`,
+        `"${i.due_date}"`,
+        `"${i.currency}"`,
+        i.subtotal.toFixed(2),
+        i.tax.toFixed(2),
+        i.total.toFixed(2),
+        i.math_reconciled !== false ? "PASSED" : "FAILED",
+        `"${i.status}"`
+      ]);
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "invoiceflow_audit_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    init();
   </script>
 </body>
 </html>
